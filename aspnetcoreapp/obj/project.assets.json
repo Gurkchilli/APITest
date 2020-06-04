@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\GitFiles\\CygniAPI\\aspnetcoreapp\\aspnetcoreapp.csproj",
+      "projectUniqueName": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
       "projectName": "aspnetcoreapp",
-      "projectPath": "C:\\GitFiles\\CygniAPI\\aspnetcoreapp\\aspnetcoreapp.csproj",
+      "projectPath": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
       "packagesPath": "C:\\Users\\erikh\\.nuget\\packages\\",
-      "outputPath": "C:\\GitFiles\\CygniAPI\\aspnetcoreapp\\obj\\",
+      "outputPath": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\erikh\\AppData\\Roaming\\NuGet\\NuGet.Config"

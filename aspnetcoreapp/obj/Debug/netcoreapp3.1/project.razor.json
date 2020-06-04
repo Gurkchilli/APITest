@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\aspnetcoreapp.csproj",
+  "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "3.0",
@@ -20521,38 +20521,38 @@
   "RootNamespace": "aspnetcoreapp",
   "Documents": [
     {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\Index.cshtml",
-      "TargetPath": "Pages\\Index.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\Error.cshtml",
-      "TargetPath": "Pages\\Error.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\Shared\\_ValidationScriptsPartial.cshtml",
-      "TargetPath": "Pages\\Shared\\_ValidationScriptsPartial.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\_ViewImports.cshtml",
-      "TargetPath": "Pages\\_ViewImports.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\Shared\\_Layout.cshtml",
-      "TargetPath": "Pages\\Shared\\_Layout.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\Privacy.cshtml",
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\Privacy.cshtml",
       "TargetPath": "Pages\\Privacy.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\GitFiles\\CygniAPI\\aspnetcoreapp\\Pages\\_ViewStart.cshtml",
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\Shared\\_Layout.cshtml",
+      "TargetPath": "Pages\\Shared\\_Layout.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\_ViewStart.cshtml",
       "TargetPath": "Pages\\_ViewStart.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\Index.cshtml",
+      "TargetPath": "Pages\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\_ViewImports.cshtml",
+      "TargetPath": "Pages\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\Shared\\_ValidationScriptsPartial.cshtml",
+      "TargetPath": "Pages\\Shared\\_ValidationScriptsPartial.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\Pages\\Error.cshtml",
+      "TargetPath": "Pages\\Error.cshtml",
       "FileKind": "mvc"
     }
   ],

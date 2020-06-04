@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JGgtg6tuRD4FfYj8Nc4BwsdC6xNXX1pKwuw3uIQ3Q7BFCd0Gf1SiIli6Lv+BrEwtU0/+YQtewtYGQyXZuF88iQ==",
+  "dgSpecHash": "YfBr7o+V4LRpeXARYKx05MvX+Rq1Z/5iY4tDVB8ku+jRYq68vRsK6GskYaXSEjwOeGsU9FJTQrapqEEwvvEX5w==",
   "success": true,
-  "projectFilePath": "C:\\GitFiles\\CygniAPI\\aspnetcoreapp\\aspnetcoreapp.csproj",
+  "projectFilePath": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
