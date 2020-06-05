@@ -31,12 +31,19 @@
 
 <div id=input>
 
+    <!--Contains the text field and button-->
+    <!--Needs to be a form so "enter" works as a OnClick-->
+    <form action="javascript:void(0);">
     <input type = "text"
             id = "mbidLink"
             placeholder = "Enter MBID here"/>
-    <input type="submit" name="submitbutton" value="Send Request" onclick="OnClick();">
+    <br>
+    <input type="submit" id="submitbutton" name="submitbutton" value="Send Request" onclick="OnClick();">
+    </form>
 
+    <!--The text field where the answer will be written-->
     <p id="response"></p>
+
 
     <script>
     function OnClick() {
