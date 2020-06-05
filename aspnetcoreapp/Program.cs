@@ -7,6 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+
 namespace aspnetcoreapp
 {
     public class Program
@@ -15,6 +19,7 @@ namespace aspnetcoreapp
         {
             CreateHostBuilder(args).Build().Run();
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

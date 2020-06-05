@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj": {}
+    "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj": {}
   },
   "projects": {
-    "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj": {
+    "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
+        "projectUniqueName": "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
         "projectName": "aspnetcoreapp",
-        "projectPath": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
-        "packagesPath": "C:\\Users\\erikh\\.nuget\\packages\\",
-        "outputPath": "C:\\GitFiles\\CygniAPI\\CygniTest\\aspnetcoreapp\\obj\\",
+        "projectPath": "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
+        "packagesPath": "C:\\Users\\Erik\\.nuget\\packages\\",
+        "outputPath": "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\erikh\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Erik\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

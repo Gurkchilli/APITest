@@ -4,7 +4,44 @@
     ViewData["Title"] = "Home page";
 }
 
+<style>
+    input[id="mbidLink"]{
+        width:100%;
+        border:2px solid #aaa;
+        border-radius:4px;
+        margin:8px, 0;
+        outline:none;
+        padding:8px;
+        box-sizing:border-box;
+    }
+
+    input[id="mbidLink"]:focus{
+        border-color:black;
+        box-shadow:0 0 4px 0 black;
+    }
+</style>
+
+
+
 <div class="text-center">
-    <h1 class="display-4">Cygni API Calls</h1>
-    <p>Please provide a MusicBrainz Identifier.</p>
+    <h1 class="display-4">Cygni API Calls by Erik Hildinge</h1>
+    <p>Please provide a MusicBrainz Identifier to get more information.</p>
+    
+</div>
+
+<div id=input>
+
+    <input type = "text"
+            id = "mbidLink"
+            placeholder = "Enter MBID here"/>
+    <input type="submit" name="submitbutton" value="Send Request" onclick="OnClick();">
+
+    <p id="response"></p>
+
+    <script>
+    function OnClick() {
+        document.getElementById("response").innerHTML = document.getElementById("mbidLink").value;
+    }
+    </script>
+
 </div>
