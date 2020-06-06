@@ -18,40 +18,71 @@ namespace aspnetcoreapp
 {
     public class Program
     {
-        private static readonly HttpClient client = new HttpClient();
+        public static HttpClient apiClient {get; set;}
 
-        public static async Task Main(string[] args)
+        public static void InitializeClient(){
+            apiClient = new HttpClient();
+            //apiClient.BaseAddress = new Uri("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
+            apiClient.DefaultRequestHeaders.Accept.Clear();
+            apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        static readonly HttpClient client = new HttpClient();
+
+        static async Task Main(string[] args)
         {
-            //Fetches the different variables
-            /*
-            var repositories = await ProcessRepositories();
-
-            foreach (var repo in repositories)
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try	
             {
-                Console.WriteLine(repo.Name);
-                Console.WriteLine(repo.Description);
-                Console.WriteLine();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
+                HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                // Above three lines can be replaced with new helper method below
+                // string responseBody = await client.GetStringAsync(uri);
+
+                Console.WriteLine(responseBody);
+
+                CreateHostBuilder(args).Build().Run();
             }
-            */
+            catch(HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");	
+                Console.WriteLine("Message :{0} ",e.Message);
+            }
+        }
 
-            CreateHostBuilder(args).Build().Run();
 
+        public static string HelloWorld(string input){
+            string str;
+            str = "Hello World " + input; 
+            return str;
+        }
+
+        protected void SendForm(object sender, EventArgs e){
             
         }
 
         private static async Task<List<Repository>> ProcessRepositories()
         {
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+            //client.DefaultRequestHeaders.Accept.Add(
+            //    new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
             client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-
-            var streamTask = client.GetStreamAsync("https://api.github.com/orgs/dotnet/repos");
+            Console.WriteLine(1);
+            //var streamTask = client.GetStreamAsync("https://api.github.com/orgs/dotnet/repos");
+            var streamTask = client.GetStreamAsync("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
+            Console.WriteLine(2);
+            Console.WriteLine(streamTask.Result);
+            Console.WriteLine(streamTask.Status);
+            //var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(await streamTask);
             var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(await streamTask);
+            Console.WriteLine(3);
             return repositories;
         }
 
-        //Creates the 
+        //Creates the connection to localhost:5000
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -65,7 +96,7 @@ namespace aspnetcoreapp
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
-
+/*
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
@@ -83,5 +114,6 @@ namespace aspnetcoreapp
 
         public DateTime LastPush =>
             DateTime.ParseExact(JsonDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+        */
     }
 }

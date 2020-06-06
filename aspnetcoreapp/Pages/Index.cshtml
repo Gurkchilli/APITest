@@ -1,4 +1,5 @@
 ﻿@page
+@using aspnetcoreapp
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -44,10 +45,18 @@
     <!--The text field where the answer will be written-->
     <p id="response"></p>
 
-
+    <!--
     <script>
     function OnClick() {
         document.getElementById("response").innerHTML = document.getElementById("mbidLink").value;
+    }
+    </script>
+    -->
+    <script>
+    
+    function OnClick() {
+        var temp = document.getElementById("mbidLink").value;
+        document.getElementById("response").innerHTML = "@Program.HelloWorld("text")";
     }
     </script>
 
