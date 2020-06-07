@@ -7,9 +7,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
+using System.Net;
+using System.Web;
+using System.Collections.Specialized;
 
 using System.Globalization;
 using System.Text.Json.Serialization;
@@ -18,33 +24,51 @@ namespace aspnetcoreapp
 {
     public class Program
     {
-        public static HttpClient apiClient {get; set;}
-
-        public static void InitializeClient(){
-            apiClient = new HttpClient();
-            //apiClient.BaseAddress = new Uri("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
-            apiClient.DefaultRequestHeaders.Accept.Clear();
-            apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
-
         static readonly HttpClient client = new HttpClient();
+
+        //Want to do this for the ASP .NET Core to work.
+        //But currently unable
+        public void OnPost(){
+            //var mbidLink = Request.Form["mbidLink"];
+            //do something with mbidLink
+        }
 
         static async Task Main(string[] args)
         {
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try	
             {
+                /*
+                while(true){
+                    //Could not get the Razor site to work, so this will have to do.
+                    
+                    string input = Console.ReadLine();
+                    
+                    //45f07934-675a-46d6-a577-6f8637a411b1
+                    //5b11f4ce-a62d-471e-81fc-a69a8278c7da
+                    
+
+
+                }
+                */
+
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
-                HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
+                //HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/" + input +"?inc=aliases&fmt=json");
+                //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
+                HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
+                
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri);
+                Console.WriteLine(JsonConvert.DeserializeObject(responseBody));
+                var jsonObj = JsonConvert.DeserializeObject<MUSICBRAINZ_DATA>(responseBody);
+                
 
-                Console.WriteLine(responseBody);
+                //Console.WriteLine(jsonObj.Isnis[0]);
+                Console.WriteLine(jsonObj.Relations[0]);
 
-                CreateHostBuilder(args).Build().Run();
+                //Used for creating the ASP .NET Razor site.
+                //CreateHostBuilder(args).Build().Run();
             }
             catch(HttpRequestException e)
             {
@@ -53,33 +77,10 @@ namespace aspnetcoreapp
             }
         }
 
-
         public static string HelloWorld(string input){
             string str;
             str = "Hello World " + input; 
             return str;
-        }
-
-        protected void SendForm(object sender, EventArgs e){
-            
-        }
-
-        private static async Task<List<Repository>> ProcessRepositories()
-        {
-            client.DefaultRequestHeaders.Accept.Clear();
-            //client.DefaultRequestHeaders.Accept.Add(
-            //    new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-            Console.WriteLine(1);
-            //var streamTask = client.GetStreamAsync("https://api.github.com/orgs/dotnet/repos");
-            var streamTask = client.GetStreamAsync("https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json");
-            Console.WriteLine(2);
-            Console.WriteLine(streamTask.Result);
-            Console.WriteLine(streamTask.Status);
-            //var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(await streamTask);
-            var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(await streamTask);
-            Console.WriteLine(3);
-            return repositories;
         }
 
         //Creates the connection to localhost:5000
@@ -91,29 +92,102 @@ namespace aspnetcoreapp
                 });
     }
 
+    public class MUSICBRAINZ_DATA{
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
 
-    public class Repository
-    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
-/*
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
 
-        [JsonPropertyName("html_url")]
-        public Uri GitHubHomeUrl { get; set; }
+        
+        [JsonPropertyName("isnis")]
+        public string[] Isnis { get; set; }
 
-        [JsonPropertyName("homepage")]
-        public Uri Homepage { get; set; }
+        [JsonPropertyName("relations")]
+        public string[] Relations { get; set; }
 
-        [JsonPropertyName("watchers")]
-        public int Watchers { get; set; }
-
-        [JsonPropertyName("pushed_at")]
-        public string JsonDate { get; set; }
-
-        public DateTime LastPush =>
-            DateTime.ParseExact(JsonDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-        */
+        [JsonPropertyName("direction")]
+        public List<string> Direction { get; set; }
+        
     }
+
+
+//Added to make the JSON prettier
+//with appropriate indentations
+//https://stackoverflow.com/questions/4580397/json-formatter-in-c
+class JsonHelper
+{
+    private const string INDENT_STRING = "    ";
+    public static string FormatJson(string str)
+    {
+        var indent = 0;
+        var quoted = false;
+        var sb = new StringBuilder();
+        for (var i = 0; i < str.Length; i++)
+        {
+            var ch = str[i];
+            switch (ch)
+            {
+                case '{':
+                case '[':
+                    sb.Append(ch);
+                    if (!quoted)
+                    {
+                        sb.AppendLine();
+                        Enumerable.Range(0, ++indent).ForEach(item => sb.Append(INDENT_STRING));
+                    }
+                    break;
+                case '}':
+                case ']':
+                    if (!quoted)
+                    {
+                        sb.AppendLine();
+                        Enumerable.Range(0, --indent).ForEach(item => sb.Append(INDENT_STRING));
+                    }
+                    sb.Append(ch);
+                    break;
+                case '"':
+                    sb.Append(ch);
+                    bool escaped = false;
+                    var index = i;
+                    while (index > 0 && str[--index] == '\\')
+                        escaped = !escaped;
+                    if (!escaped)
+                        quoted = !quoted;
+                    break;
+                case ',':
+                    sb.Append(ch);
+                    if (!quoted)
+                    {
+                        sb.AppendLine();
+                        Enumerable.Range(0, indent).ForEach(item => sb.Append(INDENT_STRING));
+                    }
+                    break;
+                case ':':
+                    sb.Append(ch);
+                    if (!quoted)
+                        sb.Append(" ");
+                    break;
+                default:
+                    sb.Append(ch);
+                    break;
+            }
+        }
+        return sb.ToString();
+    }
+}
+
+static class Extensions
+{
+    public static void ForEach<T>(this IEnumerable<T> ie, Action<T> action)
+    {
+        foreach (var i in ie)
+        {
+            action(i);
+        }
+    }
+}
 }

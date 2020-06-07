@@ -109,3 +109,4 @@ D:\Cygni\VisualStudioCode\CygniTest\aspnetcoreapp\obj\Debug\netcoreapp3.1\aspnet
 D:\Cygni\VisualStudioCode\CygniTest\aspnetcoreapp\obj\Debug\netcoreapp3.1\aspnetcoreapp.pdb
 D:\Cygni\VisualStudioCode\CygniTest\aspnetcoreapp\obj\Debug\netcoreapp3.1\aspnetcoreapp.genruntimeconfig.cache
 D:\Cygni\VisualStudioCode\CygniTest\aspnetcoreapp\obj\Debug\netcoreapp3.1\aspnetcoreapp.csproj.CopyComplete
+D:\Cygni\VisualStudioCode\CygniTest\aspnetcoreapp\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll

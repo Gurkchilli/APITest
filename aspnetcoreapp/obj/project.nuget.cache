@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "hkNbUPhlVZhbagdFrJzS81ssAoYR4Uk6Cqk55yHCSmDaXs+3IZ0TRRp1V2+jvjyIlzKvXOg/SCAvxULv20LuRA==",
+  "dgSpecHash": "0PSivlcm7mN5p/ymDKax9Lhw5tPG4i+jTZgAjplNsFm7u+S72Iq2KGOsUTbFNHBtKDY6gZZ2AHHnmQBnQ99ZXQ==",
   "success": true,
   "projectFilePath": "D:\\Cygni\\VisualStudioCode\\CygniTest\\aspnetcoreapp\\aspnetcoreapp.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Erik\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
