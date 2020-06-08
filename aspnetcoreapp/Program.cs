@@ -55,17 +55,84 @@ namespace aspnetcoreapp
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
                 //HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/" + input +"?inc=aliases&fmt=json");
-                //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
-                HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
-                
+                string input = "5b11f4ce-a62d-471e-81fc-a69a8278c7da";
+                HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
+                //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
                 response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                //Have to use dynamic Json since wikidata is several layers down.
+                //and using a class for that did not work for me.
+                dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+
+                //This identifier is the "Q11649" in the examples
+                //used for connection to wikidata.
+                string identifier = "";
+
+                for(int i = 0; i < jsonObject.relations.Count; i++){
+                    if(jsonObject.relations[i].type == "wikidata"){
+                        identifier = jsonObject.relations[i].url.resource;
+                        
+                        int index = identifier.LastIndexOf('/');
+                        //Just to make sure that the identifier exists
+                        if(index != -1){
+                            identifier = identifier.Substring(index+1);
+                            
+                            /*for(int j = 0; i < jsonObject["release-groups"].Count; j++){
+                                jsonObject["release-groups"].[j];
+                            }*/
+                            foreach(var album in jsonObject["release-groups"]){
+                                if(album["primary-type"] == "Album"){
+                                    Console.WriteLine(album.title);
+                                }
+                            }
+                            
+                        }
+                        else{
+                            Console.WriteLine("No WikiData Identifier");
+                        }
+                    }
+                }
+
+                //Wikidata
+                //fetches the link to Wikipedia
+                HttpResponseMessage responseWikiData = await client.GetAsync("https://www.wikidata.org/w/api.php?action=wbgetentities&ids="+ identifier +"&format=json&props=sitelinks");
+                responseWikiData.EnsureSuccessStatusCode();
+                string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
+                dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
+                
+                Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
+                //Get the siteUrl, and URL-encode the space with %20
+                string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
+                siteUrl = siteUrl.Replace(" ", "%20");
+
+
+                //Wikipedia
+                //Fetches the information regarding the band
+                HttpResponseMessage responseWikipedia = await client.GetAsync("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=" + siteUrl);
+                responseWikipedia.EnsureSuccessStatusCode();
+                string responseBodyWikipedia = await responseWikipedia.Content.ReadAsStringAsync();
+                //dynamic jsonObjectWikipedia = JsonConvert.DeserializeObject(responseBodyWikipedia);
+                JObject jsonObjectWikipedia = JsonConvert.DeserializeObject<JObject>(responseBodyWikipedia);
+                dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
+                string extract = resultWikipedia.extract;
+
+                Console.WriteLine(extract);
+                
+
+
+
+
+
+                //Console.WriteLine(jsonObject.relations[0]);
+
+                /*
                 string responseBody = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(JsonConvert.DeserializeObject(responseBody));
                 var jsonObj = JsonConvert.DeserializeObject<MUSICBRAINZ_DATA>(responseBody);
-                
+                */
 
                 //Console.WriteLine(jsonObj.Isnis[0]);
-                Console.WriteLine(jsonObj.Relations[0]);
+                //Console.WriteLine(jsonObj.Relations[0]);
 
                 //Used for creating the ASP .NET Razor site.
                 //CreateHostBuilder(args).Build().Run();
