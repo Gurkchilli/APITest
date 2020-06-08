@@ -25,7 +25,10 @@ namespace aspnetcoreapp
 {
     public class Program
     {
+        //Creates new clients for websites.
         static readonly HttpClient client = new HttpClient();
+        //Create the JObject that is going to be the result.
+        static JObject returnJObject = new JObject();
 
         //Want to do this for the ASP .NET Core to work.
         //But currently unable
@@ -39,117 +42,146 @@ namespace aspnetcoreapp
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try	
             {
-                /*
+                
                 while(true){
-                    string readLine = Console.ReadLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Enter MBID: ");
+                    string input = Console.ReadLine();
+                    Console.WriteLine();
+
+                    //Nirvana:      5b11f4ce-a62d-471e-81fc-a69a8278c7da
+                    //Linkin Park:  f59c5520-5f46-4d2c-b2c4-822eabf53419
+                    //Eminem:       b95ce3ff-3d05-4e87-9e01-c97b66af13d4
                     
-                    //45f07934-675a-46d6-a577-6f8637a411b1
-                    //5b11f4ce-a62d-471e-81fc-a69a8278c7da
-                }
-                */
+
+
+                    //string input = "5b11f4ce-a62d-471e-81fc-a69a8278c7da";
+                
                 
 
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
-                //HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/" + input +"?inc=aliases&fmt=json");
-                string input = "5b11f4ce-a62d-471e-81fc-a69a8278c7da";
-                HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
-                //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                //Have to use dynamic Json since wikidata is several layers down.
-                //and using a class for that did not work for me.
-                dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
+                    //HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/" + input +"?inc=aliases&fmt=json");
+                    
+                    HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
+                    //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    //Have to use dynamic Json since wikidata is several layers down.
+                    //and using a class for that did not work for me.
+                    dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
 
-                //This identifier is the "Q11649" in the examples
-                //used for connection to wikidata.
-                string identifier = "";
-                
+                    //This identifier is the "Q11649" in the examples
+                    //used for connection to wikidata.
+                    string identifier = "";
+                    
 
-                for(int i = 0; i < jsonObject.relations.Count; i++){
-                    if(jsonObject.relations[i].type == "wikidata"){
-                        identifier = jsonObject.relations[i].url.resource;
+                    for(int i = 0; i < jsonObject.relations.Count; i++){
                         
-                        int index = identifier.LastIndexOf('/');
-                        //Just to make sure that the identifier exists
-                        if(index != -1){
-                            identifier = identifier.Substring(index+1);
+                        Console.WriteLine(jsonObject.relations[i].type);
+                        if(jsonObject.relations[i].type == "wikidata"){
+                            identifier = jsonObject.relations[i].url.resource;
                             
-                            //creating Lists for saving Album Title, Picture Id, and Image Url
-                            List<string> albumTitle = new List<string>();
-                            List<string> pictureId = new List<string>();
-                            List<string> imageUrl = new List<string>();
+                            int index = identifier.LastIndexOf('/');
+                            //Just to make sure that the identifier exists
+                            if(index != -1){
+                                identifier = identifier.Substring(index+1);
+                                
+                                //creating Lists for saving Album Title, Picture Id, and Image Url
+                                List<string> albumTitle = new List<string>();
+                                List<string> pictureId = new List<string>();
+                                List<string> imageUrl = new List<string>();
 
-                            //Goes through all of the release-groups, sees if they are Albums,
-                            //and then fetches album Title and Id for the cover picture
-                            foreach(var album in jsonObject["release-groups"]){
-                                if(album["primary-type"] == "Album"){
-                                    albumTitle.Add(album.title.ToString());
-                                    pictureId.Add(album.id.ToString());
+                                //Goes through all of the release-groups, sees if they are Albums,
+                                //and then fetches album Title and Id for the cover picture
+                                foreach(var album in jsonObject["release-groups"]){
+                                    if(album["primary-type"] == "Album"){
+                                        albumTitle.Add(album.title.ToString());
+                                        pictureId.Add(album.id.ToString());
+                                    }
                                 }
-                            }
 
-                            //Gets a HttpRespinse to fetch the Album Cover Url
-                            foreach(var id in pictureId){
-                                HttpResponseMessage responseCoverArt = await client.GetAsync("http://coverartarchive.org/release-group/" + id);
-                                //Since certain Album Cover's do not exist
-                                //Check if the page is "404 : Not Found" 
-                                if(responseCoverArt.StatusCode != HttpStatusCode.NotFound){
-                                    string responseBodyCoverArt = await responseCoverArt.Content.ReadAsStringAsync();
-                                    dynamic jsonObjectCoverArt = JsonConvert.DeserializeObject(responseBodyCoverArt);
+                                //Gets a HttpRespinse to fetch the Album Cover Url
+                                foreach(var id in pictureId){
+                                    HttpResponseMessage responseCoverArt = await client.GetAsync("http://coverartarchive.org/release-group/" + id);
+                                    //Since certain Album Cover's do not exist
+                                    //Check if the page is "404 : Not Found" 
+                                    if(responseCoverArt.StatusCode != HttpStatusCode.NotFound){
+                                        string responseBodyCoverArt = await responseCoverArt.Content.ReadAsStringAsync();
+                                        dynamic jsonObjectCoverArt = JsonConvert.DeserializeObject(responseBodyCoverArt);
+                                        
+                                        //Add the picture to the list
+                                        imageUrl.Add(jsonObjectCoverArt.images[0].image.ToString());
+                                    }
+                                    //If the album cover does not exist, add a note.
+                                    else{
+                                        imageUrl.Add("No Available Album Cover!");
+                                    }
+                                }
+
+                                JArray array = new JArray();
+                                for(int k = 0; k < albumTitle.Count; k++){
+                                    Console.WriteLine();
+                                    JObject obj = new JObject();
+
+                                    obj.Add("title",albumTitle[k]);
+                                    obj.Add("id",pictureId[k]);
+                                    obj.Add("image",imageUrl[k]);
                                     
-                                    //Add the picture to the list
-                                    imageUrl.Add(jsonObjectCoverArt.images[0].image.ToString());
+                                    Console.WriteLine(obj);
+
+                                    returnJObject["albums"] = (obj);
+                                    /*Console.WriteLine(albumTitle[k]);
+                                    Console.WriteLine(pictureId[k]);
+                                    Console.WriteLine(imageUrl[k]);
+                                    Console.WriteLine();*/
+                                    
                                 }
-                                //If the album cover does not exist, add a note.
-                                else{
-                                    imageUrl.Add("No Available Album Cover!");
-                                }
+
+                                Console.WriteLine(returnJObject);
+                           
+                            }
+                            else{
+                                Console.WriteLine("No WikiData Identifier");
                             }
 
-                            for(int k = 0; k < albumTitle.Count; k++){
-                                Console.WriteLine(albumTitle[k]);
-                                Console.WriteLine(pictureId[k]);
-                                Console.WriteLine(imageUrl[k]);
-                                Console.WriteLine();
-                            }                            
-                        }
-                        else{
-                            Console.WriteLine("No WikiData Identifier");
+                            //Once the correct type (wikidata) has been found
+                            //break from the loop.
+                            break;
                         }
                     }
+
+                    //Wikidata
+                    //fetches the link to Wikipedia
+                    HttpResponseMessage responseWikiData = await client.GetAsync("https://www.wikidata.org/w/api.php?action=wbgetentities&ids="+ identifier +"&format=json&props=sitelinks");
+                    responseWikiData.EnsureSuccessStatusCode();
+                    string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
+                    dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
+                    
+                    //Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
+                    //Get the siteUrl, and URL-encode the space with %20
+                    string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
+                    siteUrl = siteUrl.Replace(" ", "%20");
+
+
+                    //Wikipedia
+                    //Fetches the information regarding the band
+                    HttpResponseMessage responseWikipedia = await client.GetAsync("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=" + siteUrl);
+                    responseWikipedia.EnsureSuccessStatusCode();
+                    string responseBodyWikipedia = await responseWikipedia.Content.ReadAsStringAsync();
+                    //dynamic jsonObjectWikipedia = JsonConvert.DeserializeObject(responseBodyWikipedia);
+                    JObject jsonObjectWikipedia = JsonConvert.DeserializeObject<JObject>(responseBodyWikipedia);
+                    dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
+                    string extract = resultWikipedia.extract;
+
+                    extract = StripHtml(extract);
+                    Console.WriteLine(extract);
+                    
+
+
+                    //Used for creating the ASP .NET Razor site.
+                    //CreateHostBuilder(args).Build().Run();
                 }
-
-                //Wikidata
-                //fetches the link to Wikipedia
-                HttpResponseMessage responseWikiData = await client.GetAsync("https://www.wikidata.org/w/api.php?action=wbgetentities&ids="+ identifier +"&format=json&props=sitelinks");
-                responseWikiData.EnsureSuccessStatusCode();
-                string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
-                dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
-                
-                //Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
-                //Get the siteUrl, and URL-encode the space with %20
-                string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
-                siteUrl = siteUrl.Replace(" ", "%20");
-
-
-                //Wikipedia
-                //Fetches the information regarding the band
-                HttpResponseMessage responseWikipedia = await client.GetAsync("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=" + siteUrl);
-                responseWikipedia.EnsureSuccessStatusCode();
-                string responseBodyWikipedia = await responseWikipedia.Content.ReadAsStringAsync();
-                //dynamic jsonObjectWikipedia = JsonConvert.DeserializeObject(responseBodyWikipedia);
-                JObject jsonObjectWikipedia = JsonConvert.DeserializeObject<JObject>(responseBodyWikipedia);
-                dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
-                string extract = resultWikipedia.extract;
-
-                extract = StripHtml(extract);
-                Console.WriteLine(extract);
-                
-
-
-                //Used for creating the ASP .NET Razor site.
-                //CreateHostBuilder(args).Build().Run();
             }
             catch(HttpRequestException e)
             {
