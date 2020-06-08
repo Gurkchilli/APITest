@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Net;
 using System.Web;
 using System.Collections.Specialized;
@@ -40,17 +41,13 @@ namespace aspnetcoreapp
             {
                 /*
                 while(true){
-                    //Could not get the Razor site to work, so this will have to do.
-                    
-                    string input = Console.ReadLine();
+                    string readLine = Console.ReadLine();
                     
                     //45f07934-675a-46d6-a577-6f8637a411b1
                     //5b11f4ce-a62d-471e-81fc-a69a8278c7da
-                    
-
-
                 }
                 */
+                
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
@@ -67,6 +64,7 @@ namespace aspnetcoreapp
                 //This identifier is the "Q11649" in the examples
                 //used for connection to wikidata.
                 string identifier = "";
+                
 
                 for(int i = 0; i < jsonObject.relations.Count; i++){
                     if(jsonObject.relations[i].type == "wikidata"){
@@ -77,15 +75,44 @@ namespace aspnetcoreapp
                         if(index != -1){
                             identifier = identifier.Substring(index+1);
                             
-                            /*for(int j = 0; i < jsonObject["release-groups"].Count; j++){
-                                jsonObject["release-groups"].[j];
-                            }*/
+                            //creating Lists for saving Album Title, Picture Id, and Image Url
+                            List<string> albumTitle = new List<string>();
+                            List<string> pictureId = new List<string>();
+                            List<string> imageUrl = new List<string>();
+
+                            //Goes through all of the release-groups, sees if they are Albums,
+                            //and then fetches album Title and Id for the cover picture
                             foreach(var album in jsonObject["release-groups"]){
                                 if(album["primary-type"] == "Album"){
-                                    Console.WriteLine(album.title);
+                                    albumTitle.Add(album.title.ToString());
+                                    pictureId.Add(album.id.ToString());
                                 }
                             }
-                            
+
+                            //Gets a HttpRespinse to fetch the Album Cover Url
+                            foreach(var id in pictureId){
+                                HttpResponseMessage responseCoverArt = await client.GetAsync("http://coverartarchive.org/release-group/" + id);
+                                //Since certain Album Cover's do not exist
+                                //Check if the page is "404 : Not Found" 
+                                if(responseCoverArt.StatusCode != HttpStatusCode.NotFound){
+                                    string responseBodyCoverArt = await responseCoverArt.Content.ReadAsStringAsync();
+                                    dynamic jsonObjectCoverArt = JsonConvert.DeserializeObject(responseBodyCoverArt);
+                                    
+                                    //Add the picture to the list
+                                    imageUrl.Add(jsonObjectCoverArt.images[0].image.ToString());
+                                }
+                                //If the album cover does not exist, add a note.
+                                else{
+                                    imageUrl.Add("No Available Album Cover!");
+                                }
+                            }
+
+                            for(int k = 0; k < albumTitle.Count; k++){
+                                Console.WriteLine(albumTitle[k]);
+                                Console.WriteLine(pictureId[k]);
+                                Console.WriteLine(imageUrl[k]);
+                                Console.WriteLine();
+                            }                            
                         }
                         else{
                             Console.WriteLine("No WikiData Identifier");
@@ -100,7 +127,7 @@ namespace aspnetcoreapp
                 string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
                 dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
                 
-                Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
+                //Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
                 //Get the siteUrl, and URL-encode the space with %20
                 string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
                 siteUrl = siteUrl.Replace(" ", "%20");
@@ -116,23 +143,10 @@ namespace aspnetcoreapp
                 dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
                 string extract = resultWikipedia.extract;
 
+                extract = StripHtml(extract);
                 Console.WriteLine(extract);
                 
 
-
-
-
-
-                //Console.WriteLine(jsonObject.relations[0]);
-
-                /*
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(JsonConvert.DeserializeObject(responseBody));
-                var jsonObj = JsonConvert.DeserializeObject<MUSICBRAINZ_DATA>(responseBody);
-                */
-
-                //Console.WriteLine(jsonObj.Isnis[0]);
-                //Console.WriteLine(jsonObj.Relations[0]);
 
                 //Used for creating the ASP .NET Razor site.
                 //CreateHostBuilder(args).Build().Run();
@@ -157,6 +171,13 @@ namespace aspnetcoreapp
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        //First, remove new lines. Then remove html elements.
+        public static string StripHtml(string input)
+        {
+            string replacement = Regex.Replace(input, @"\t|\n|\r", "");
+            return Regex.Replace(replacement, "<.*?>", String.Empty);
+        }
     }
 
     public class MUSICBRAINZ_DATA{
@@ -169,7 +190,6 @@ namespace aspnetcoreapp
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        
         [JsonPropertyName("isnis")]
         public string[] Isnis { get; set; }
 
@@ -183,7 +203,7 @@ namespace aspnetcoreapp
 
 
 //Added to make the JSON prettier
-//with appropriate indentations
+//Mainly used for debugging
 //https://stackoverflow.com/questions/4580397/json-formatter-in-c
 class JsonHelper
 {
