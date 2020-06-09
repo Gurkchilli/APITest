@@ -48,25 +48,22 @@ namespace aspnetcoreapp
                     Console.WriteLine("Enter MBID: ");
                     string input = Console.ReadLine();
                     Console.WriteLine();
-
+                    //string input = "5b11f4ce-a62d-471e-81fc-a69a8278c7da";
                     //Nirvana:      5b11f4ce-a62d-471e-81fc-a69a8278c7da
                     //Linkin Park:  f59c5520-5f46-4d2c-b2c4-822eabf53419
                     //Eminem:       b95ce3ff-3d05-4e87-9e01-c97b66af13d4
                     
-
-
-                    //string input = "5b11f4ce-a62d-471e-81fc-a69a8278c7da";
-                
-                
+                    //Add the first parameter of the final JObject
+                    //Also add the parameter "Description" here, so it gets a nice placement in the end.
+                    returnJObject["mbid"] = input;
+                    returnJObject["description"] = "";
 
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
-                    //HttpResponseMessage response = await client.GetAsync("https://musicbrainz.org/ws/2/area/" + input +"?inc=aliases&fmt=json");
-                    
                     HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
-                    //HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?&fmt=json&inc=url-rels+release-groups");
                     response.EnsureSuccessStatusCode();
                     string responseBody = await response.Content.ReadAsStringAsync();
+
                     //Have to use dynamic Json since wikidata is several layers down.
                     //and using a class for that did not work for me.
                     dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
@@ -77,8 +74,6 @@ namespace aspnetcoreapp
                     
 
                     for(int i = 0; i < jsonObject.relations.Count; i++){
-                        
-                        Console.WriteLine(jsonObject.relations[i].type);
                         if(jsonObject.relations[i].type == "wikidata"){
                             identifier = jsonObject.relations[i].url.resource;
                             
@@ -119,26 +114,18 @@ namespace aspnetcoreapp
                                     }
                                 }
 
+                                //Create the Json album objects and put them inside of an array
                                 JArray array = new JArray();
                                 for(int k = 0; k < albumTitle.Count; k++){
-                                    Console.WriteLine();
                                     JObject obj = new JObject();
 
                                     obj.Add("title",albumTitle[k]);
                                     obj.Add("id",pictureId[k]);
                                     obj.Add("image",imageUrl[k]);
                                     
-                                    Console.WriteLine(obj);
-
-                                    returnJObject["albums"] = (obj);
-                                    /*Console.WriteLine(albumTitle[k]);
-                                    Console.WriteLine(pictureId[k]);
-                                    Console.WriteLine(imageUrl[k]);
-                                    Console.WriteLine();*/
-                                    
+                                    array.Add(obj);
                                 }
-
-                                Console.WriteLine(returnJObject);
+                                returnJObject["albums"] = array;
                            
                             }
                             else{
@@ -175,12 +162,17 @@ namespace aspnetcoreapp
                     string extract = resultWikipedia.extract;
 
                     extract = StripHtml(extract);
-                    Console.WriteLine(extract);
+                    
+                    //Add the extract to the Json answer.
+                    returnJObject["description"] = extract;
                     
 
 
                     //Used for creating the ASP .NET Razor site.
                     //CreateHostBuilder(args).Build().Run();
+
+
+                    Console.WriteLine(returnJObject);
                 }
             }
             catch(HttpRequestException e)
