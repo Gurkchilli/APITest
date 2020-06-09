@@ -17,6 +17,30 @@ namespace WebAPI
         //Create the JObject that is going to be the result.
         static JObject returnJObject = new JObject();
 
+        //Used each time a resonce from an API is needed
+        public static async Task<dynamic> CreateClient(string url)
+        {
+            HttpResponseMessage response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            //Have to use dynamic Json since wikidata is several layers down.
+            //and using a class for that did not work for me.
+            dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+
+            return jsonObject;
+        }
+
+        public static void MusicBrainzData(string input)
+        {
+
+        }
+
+        public static string ResponseWikiData()
+        {
+            return "";
+        }
+
         public static async Task<JObject> ReturnJson(string input)
         {
             try
@@ -28,6 +52,7 @@ namespace WebAPI
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", "Erik007");
+                
                 HttpResponseMessage response = await client.GetAsync("http://musicbrainz.org/ws/2/artist/" + input + "?&fmt=json&inc=url-rels+release-groups");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -54,6 +79,7 @@ namespace WebAPI
                             identifier = identifier.Substring(index + 1);
 
                             //creating Lists for saving Album Title, Picture Id, and Image Url
+                            //All of these will be in the same object later
                             List<string> albumTitle = new List<string>();
                             List<string> pictureId = new List<string>();
                             List<string> imageUrl = new List<string>();
@@ -117,34 +143,42 @@ namespace WebAPI
                     }
                 }
 
-                //Wikidata
-                //fetches the link to Wikipedia
-                HttpResponseMessage responseWikiData = await client.GetAsync("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=" + identifier + "&format=json&props=sitelinks");
-                responseWikiData.EnsureSuccessStatusCode();
-                string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
-                dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
+                //Make sure that the artist has a wikidata identifier
+                if (identifier != "")
+                {
+                    //Wikidata
+                    //fetches the link to Wikipedia
+                    HttpResponseMessage responseWikiData = await client.GetAsync("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=" + identifier + "&format=json&props=sitelinks");
+                    responseWikiData.EnsureSuccessStatusCode();
+                    string responseBodyWikiData = await responseWikiData.Content.ReadAsStringAsync();
+                    dynamic jsonObjectWikiData = JsonConvert.DeserializeObject(responseBodyWikiData);
 
-                //Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
-                //Get the siteUrl, and URL-encode the space with %20
-                string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
-                siteUrl = siteUrl.Replace(" ", "%20");
+                    //Console.WriteLine(jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title);
+                    //Get the siteUrl, and URL-encode the space with %20
+                    string siteUrl = jsonObjectWikiData.entities[identifier].sitelinks.enwiki.title;
+                    siteUrl = siteUrl.Replace(" ", "%20");
 
 
-                //Wikipedia
-                //Fetches the information regarding the band
-                HttpResponseMessage responseWikipedia = await client.GetAsync("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=" + siteUrl);
-                responseWikipedia.EnsureSuccessStatusCode();
-                string responseBodyWikipedia = await responseWikipedia.Content.ReadAsStringAsync();
-                //dynamic jsonObjectWikipedia = JsonConvert.DeserializeObject(responseBodyWikipedia);
-                JObject jsonObjectWikipedia = JsonConvert.DeserializeObject<JObject>(responseBodyWikipedia);
-                dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
-                string extract = resultWikipedia.extract;
+                    //Wikipedia
+                    //Fetches the information regarding the band
+                    HttpResponseMessage responseWikipedia = await client.GetAsync("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=" + siteUrl);
+                    responseWikipedia.EnsureSuccessStatusCode();
+                    string responseBodyWikipedia = await responseWikipedia.Content.ReadAsStringAsync();
+                    JObject jsonObjectWikipedia = JsonConvert.DeserializeObject<JObject>(responseBodyWikipedia);
+                    dynamic resultWikipedia = jsonObjectWikipedia["query"].First().First().First().First;
+                    string extract = resultWikipedia.extract;
 
-                //Removes HTML tags and new lines
-                extract = StripHtml(extract);
+                    //Removes HTML tags and new lines
+                    extract = StripHtml(extract);
 
-                //Add the extract to the Json answer.
-                returnJObject["description"] = extract;
+                    //Add the extract to the Json answer.
+                    returnJObject["description"] = extract;
+                }
+                else
+                {
+                    returnJObject["description"] = "No Wikipedia Page Available!";
+                    returnJObject["albums"] = null;
+                }
 
 
                 return returnJObject;
@@ -158,11 +192,12 @@ namespace WebAPI
             }
         }
 
-        //First, remove new lines. Then remove html elements.
+        //First, remove new lines. Then remove html elements. Then remove backslashes.
         public static string StripHtml(string input)
         {
             string replacement = Regex.Replace(input, @"\t|\n|\r", "");
-            return Regex.Replace(replacement, "<.*?>", String.Empty);
+            replacement = Regex.Replace(replacement, "<.*?>", String.Empty);
+            return Regex.Replace(replacement, @"\\", "");
         }
     }
 }
