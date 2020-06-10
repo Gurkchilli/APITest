@@ -63,7 +63,7 @@ namespace WebAPI
                 }
             }
 
-            //Gets a HttpRespinse to fetch the Album Cover Url
+            //Gets a HttpResponse to fetch the Album Cover Url
             foreach (var id in pictureId)
             {
                 HttpResponseMessage responseCoverArt = await client.GetAsync("http://coverartarchive.org/release-group/" + id);
@@ -76,6 +76,10 @@ namespace WebAPI
 
                     //Add the picture to the list
                     imageUrl.Add(jsonObjectCoverArt.images[0].image.ToString());
+
+                    //An improvement could be:
+                    //imageUrl.Add("http://coverartarchive.org/release-group/" + id + "/front[-(250)]");
+                    //But seems to be slower during testing
                 }
                 //If the album cover does not exist, add a note.
                 else
@@ -171,6 +175,7 @@ namespace WebAPI
                             identifier = identifier.Substring(index + 1);
 
                             //Creates the array which contains 
+                            //album Title, Id for the cover picture, and the cover picture
                             await CreateAlbumsArray(jsonObject);
                         }
 
