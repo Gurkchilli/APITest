@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
                     "Östen med Resten : 2844b5b7-284b-4fc3-8bd4-0b3297938ee4";
         }
 
-        // GET api/artist/5
+        // GET api/artist/mbid
         public async Task<JObject> Get(string id)
         {
             var jObject = await Program.ReturnJson(id);
