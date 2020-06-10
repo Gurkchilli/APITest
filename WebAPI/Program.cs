@@ -12,8 +12,10 @@ namespace WebAPI
 {
     public class Program
     {
-        //Creates new client used for 
-        static readonly HttpClient client = new HttpClient();
+        //Creates new client
+        //HttpClient is intended to be instantiated once and re-used throughout the life of an application.
+        //Instantiate it through an ApiController, in order to avoid exeptions.
+        static readonly HttpClient client = Controllers.ClientController.HttpClient;
         //Create the JObject that is going to be the result.
         static readonly JObject returnJObject = new JObject();
 
@@ -51,7 +53,7 @@ namespace WebAPI
             List<string> imageUrl = new List<string>();
 
             //Goes through all of the release-groups, sees if they are Albums,
-            //and then fetches album Title and Id for the cover picture
+            //and if they are then fetch album Title and Id for the cover picture
             foreach (var album in jsonObject["release-groups"])
             {
                 if (album["primary-type"] == "Album")
