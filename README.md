@@ -19,8 +19,11 @@ You enter a MBID, which will return:
 In order to search using a MBID of your choise, use:\
 localhost:65134/api/artist/"Your MBID"
 
-Some examples of MBID's are:\
-Nirvana : 5b11f4ce-a62d-471e-81fc-a69a8278c7da\
-Linking Park : f59c5520-5f46-4d2c-b2c4-822eabf53419\
-Eminem : b95ce3ff-3d05-4e87-9e01-c97b66af13d4\
-Östen med Resten : 2844b5b7-284b-4fc3-8bd4-0b3297938ee4\
+Some examples of MBID's are:
+
+BAND  | MBID
+------------- | -------------
+Nirvana | 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+Linking Park | f59c5520-5f46-4d2c-b2c4-822eabf53419
+Eminem | b95ce3ff-3d05-4e87-9e01-c97b66af13d4
+Östen med Resten | 2844b5b7-284b-4fc3-8bd4-0b3297938ee4
