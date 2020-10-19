@@ -6,12 +6,12 @@ This is a ASP.NET Web Application, with the .NET Framework 4.7.1. Mainly tested 
 This .NET solution is developed in Visual Studio 2017, and also started from Visual Studio 2017.
 Make sure that you have the ASP.NET workload installed in your Visual Studio Installer.
 
-This API call makes use of:\
+This API call makes use of:
 * MusicBrainz, which contain detailed information about musical artists.
 * Wikipedia, to get a description about the band.
 * Cover Art Archive, which helps retrieve an url to a requested album.
 
-You enter a MBID, which will return:\
+You enter a MBID, which will return:
 * The given MBID
 * A description from Wikipedia
 * All albums (with title, album id, and image url) in separate json objects.
