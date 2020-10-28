@@ -12,9 +12,24 @@ This API call makes use of:
 * Cover Art Archive, which helps retrieve an url to a requested album.
 
 You enter a MBID, which will return:
-* The given MBID
-* A description from Wikipedia
-* All albums (with title, album id, and image url) in separate json objects.
+```json
+{
+  "mbid": "Given MBID",
+  "description": "A short description taken from Wikipedia",
+  "albums": [
+    {
+      "title": "Album Title 1",
+      "id": "Id provided to MusicBrainz",
+      "image": "An URL to the album image"
+    },
+    {
+      "title": "Album Title 2",
+      "id": "Id provided to MusicBrainz",
+      "image": "An URL to the album image"
+    }
+  ]
+}
+```
 
 In order to search using a MBID of your choise, use:\
 localhost:65134/api/artist/"Your MBID"
