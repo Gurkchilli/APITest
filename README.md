@@ -9,7 +9,7 @@ Make sure that you have the ASP.NET workload installed in your Visual Studio Ins
 This API call makes use of:
 * MusicBrainz, which contain detailed information about musical artists.
 * Wikipedia, to get a description about the band.
-* Cover Art Archive, which helps retrieve an url to a requested album.
+* Cover Art Archive, which helps retrieve an url to a requested album. 
 
 You enter a MBID, which will return:
 ```json
