@@ -32,7 +32,7 @@ You enter a MBID, which will return:
 ```
 
 In order to search using a MBID of your choise, use:\
-localhost:65134/api/artist/"Your MBID" 
+localhost:65134/api/artist/"Your MBID"
 
 Some examples of MBID's are:
 
